@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Search API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .title { font-weight: bold; color: #1976d2; }
+        .snippet { color: #666; margin: 5px 0; }
+        .link { color: #00b894; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h1>Google Custom Search API Test</h1>
+    <input type="text" id="searchQuery" placeholder="Search query..." style="width: 300px; padding: 10px;">
+    <button onclick="testSearch()" style="padding: 10px 20px;">Search</button>
+    <div id="results"></div>
+
+    <script>
+        const API_KEY = 'AIzaSyCmitf6JHmrOpGUc98XHU3xT-hMTJVu4IE';
+        const CX = 'f3d29faa34e134b8b';
+
+        async function testSearch() {
+            const query = document.getElementById('searchQuery').value;
+            if (!query) return;
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = 'Searching...';
+
+            try {
+                const url = `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CX}&q=${encodeURIComponent(query)}&num=3`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.items && data.items.length > 0) {
+                    let html = '<h3>Search Results:</h3>';
+                    data.items.forEach(item => {
+                        html += `
+                            <div class="result">
+                                <div class="title">${item.title}</div>
+                                <div class="snippet">${item.snippet}</div>
+                                <a href="${item.link}" target="_blank" class="link">Read more</a>
+                            </div>
+                        `;
+                    });
+                    resultsDiv.innerHTML = html;
+                } else {
+                    resultsDiv.innerHTML = 'No results found.';
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                resultsDiv.innerHTML = 'Error occurred: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
